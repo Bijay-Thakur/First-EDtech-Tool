@@ -1,0 +1,52 @@
+.HomePage {
+    padding: 40px;
+    background: linear-gradient(to bottom right, #f3ec78, #af4261);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 1s ease-in;
+  }
+  
+  .App-header {
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  .App-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .App-header p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+  }
+  
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .buttons button {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #00c9ff, #92fe9d);
+    border: none;
+    border-radius: 30px;
+    color: #000;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
+  
+  .buttons button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  

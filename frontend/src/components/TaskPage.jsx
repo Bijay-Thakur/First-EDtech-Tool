@@ -1,94 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import './TaskPage.css';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
 
 function TaskPage() {
-  const { type } = useParams(); // Get 'time' or 'space' from the URL
-  const [selectedTab, setSelectedTab] = useState("java"); // Default tab is Java
   const [code, setCode] = useState("");
-  const [uploadedFile, setUploadedFile] = useState(null);
+  const [language, setLanguage] = useState("JavaScript");
+  const [option, setOption] = useState("time");  // or space
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Handle file upload
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setUploadedFile(file);
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/ai/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code, language, option }),
+      });
+      const data = await response.json();
+      setResult(data.result);
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
     }
   };
 
-  // Handle code input change
-  const handleCodeChange = (event) => {
-    setCode(event.target.value);
-  };
-
-  // Change the selected language tab
-  const handleTabChange = (language) => {
-    setSelectedTab(language);
-    setCode(""); // Optionally reset the code when changing the tab.
-  };
-
   return (
-    <div className="task-page">
-      <header className="task-header">
-        <h1>{type === "time" ? "Compute Time Complexity" : "Compute Space Complexity"}</h1>
-        
-        <div className="upload-option">
-          <label htmlFor="file-upload" className="upload-label">
-            <span>Upload File from Device</span>
-          </label>
-          <input
-            type="file"
-            id="file-upload"
-            accept=".java,.js,.py,.cpp"
-            onChange={handleFileUpload}
-            style={{ display: "none" }}
-          />
-        </div>
-
-        <div className="code-entry-option">
-          <h2>Enter Your Code</h2>
-          
-          <div className="tabs">
-            <button
-              className={`tab ${selectedTab === "java" ? "active" : ""}`}
-              onClick={() => handleTabChange("java")}
-            >
-              Java
-            </button>
-            <button
-              className={`tab ${selectedTab === "javascript" ? "active" : ""}`}
-              onClick={() => handleTabChange("javascript")}
-            >
-              JavaScript
-            </button>
-            <button
-              className={`tab ${selectedTab === "python" ? "active" : ""}`}
-              onClick={() => handleTabChange("python")}
-            >
-              Python
-            </button>
-            <button
-              className={`tab ${selectedTab === "cpp" ? "active" : ""}`}
-              onClick={() => handleTabChange("cpp")}
-            >
-              C++
-            </button>
-          </div>
-
-          <textarea
-            value={code}
-            onChange={handleCodeChange}
-            placeholder={`Enter your ${selectedTab} code here...`}
-            className="code-input"
-            rows="10"
-            cols="50"
-          />
-
-          <div className="submit-btn">
-            <button>{type === "time" ? "Analyze Time Complexity" : "Analyze Space Complexity"}</button>
-          </div>
-        </div>
-      </header>
+    <div>
+      <h1>Analyze Code Complexity</h1>
+      <textarea
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        placeholder="Enter code here"
+      />
+      <select onChange={(e) => setLanguage(e.target.value)} value={language}>
+        <option value="JavaScript">JavaScript</option>
+        <option value="Python">Python</option>
+        <option value="Java">Java</option>
+        {/* Add other languages as needed */}
+      </select>
+      <select onChange={(e) => setOption(e.target.value)} value={option}>
+        <option value="time">Time Complexity</option>
+        <option value="space">Space Complexity</option>
+      </select>
+      <button onClick={handleSubmit}>Analyze</button>
+      {result && <div><h2>Result</h2><p>{result}</p></div>}
+      {error && <div>{error}</div>}
     </div>
   );
 }

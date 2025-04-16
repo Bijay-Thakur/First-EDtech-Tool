@@ -3,6 +3,7 @@ import express from 'express';
 const router = express.Router();
 
 router.post('/', async (req, res) => {
+  console.log("Incoming Request Bod:", req.body);
   const { code, language, type } = req.body;
 
   // For now, we'll mock a response.

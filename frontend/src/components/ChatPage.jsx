@@ -17,17 +17,24 @@ const ChatPage = () => {
   const [showResult, setShowResult] = useState(false);
 
   const handleUserMessage = async (text) => {
-    setMessages((prev) => [...prev, { sender: 'user', text }]);
+    const newMessages = [...messages, { sender: 'user', text }];
+    setMessages(newMessages);
+
+    // Format messages for OpenAI: {role, content}
+    const formattedMessages = newMessages.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.text
+    }));
 
     try {
       const response = await fetch('http://localhost:5000/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: text,
+          messages: formattedMessages,
           code: codeInput,
           language,
-          complexityType,
+          complexityType
         }),
       });
 
@@ -41,17 +48,13 @@ const ChatPage = () => {
         setShowLanguageSelector(true);
       }
       if (data.showResult) setShowResult(true);
-      if (data.reply) {
-        setMessages((prev) => [...prev, { sender: 'ai', text: data.reply }]);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          { sender: 'ai', text: "Hmm, I didn't get that. Could you try rephrasing?" },
-        ]);
-      }
+
+      const aiReply = data.reply || "Hmm, I didn't get that. Could you try rephrasing?";
+      setMessages(prev => [...prev, { sender: 'ai', text: aiReply }]);
+
     } catch (error) {
       console.error('Error:', error);
-      setMessages((prev) => [...prev, { sender: 'ai', text: 'Something went wrong. Please try again.' }]);
+      setMessages(prev => [...prev, { sender: 'ai', text: 'Something went wrong. Please try again.' }]);
     }
   };
 

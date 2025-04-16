@@ -17,6 +17,7 @@ const openai = new OpenAI({
 });
 
 app.post('/api/analyze', async (req, res) => {
+  console.log("📦 Incoming Request Body:", req.body);
   const { messages, code, language, complexityType } = req.body;
 
   try {
@@ -32,7 +33,8 @@ You are BiTh AI 🤖, an interactive and friendly AI assistant who chats with us
       `.trim(),
     };
 
-    const fullMessages = [systemMessage, ...messages];
+    const fullMessages = [systemMessage, ...(Array.isArray(messages) ? messages : [])]; // ✅ Safe fallback
+
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
